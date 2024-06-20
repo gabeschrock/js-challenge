@@ -16,7 +16,7 @@ export function make(head, tail) {
             
             case TAIL:
                 if (input !== undefined) {
-                    head = input;
+                    tail = input;
                 }
                 return tail;
         
@@ -37,15 +37,22 @@ export function is_pair(func) {
 
 export function head(pair, value) {
     if (!is_pair(pair)) {
-        return false;
+        return;
     }
-    pair(HEAD, value);
+    return pair(HEAD, value);
 }
 
 export function tail(pair, value) {
     if (!is_pair(pair)) {
-        return false;
+        return;
     }
-    pair(TAIL, value);
+    return pair(TAIL, value);
+}
 
+export function str(pair) {
+    if(!is_pair(pair)) {
+        return String(pair);
+    }
+    // no self-reference checks, be careful
+    return `(${str(head(pair))}, ${str(tail(pair))})`;
 }
