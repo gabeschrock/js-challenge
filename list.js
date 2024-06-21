@@ -1,3 +1,6 @@
+/**
+ * @typedef {import("./pair.js").Pair} List
+ */
 import { make as make_pair, head, tail, is_pair, str } from "./pair.js"
 
 function get(list, index) {
@@ -28,23 +31,52 @@ function short(list) {
 
 export let is_list = is_pair;
 
+/**
+ * Construct an empty list.
+ * @returns {List}  An empty list.
+ */
 export function make() {
     return make_pair(null, null);
 }
 
-export function index(list, index) {
-    if (!is_list(list)) {
-        return;
-    }
-    let length = short(list);
-    if (length === 0) { return; }
-    if (length === 1) {
-        return index === 0 ? head(list) : undefined;
-    }
-    if (length === 2) {
-        return index === 1 ? tail(list) : undefined;
-    }
+/**
+ * 
+ * @param {List} list - The list to get the length of.
+ * @returns {number}  - The length of the list.
+ */
+export function length(list) {
+    if (!is_list(list)) { return; }
 
+    let len = short(list);
+    if (len < 3) { return len; }
+
+    let debug = list;
+
+    let result = 1;
+    while (is_list(list)) {
+        list = tail(list);
+        result++;
+    }
+    console.log(`length of ${str(debug)}: ${result}`)
+    return result;
+}
+
+/**
+ * Get the value at an index of a list.
+ * @param {List}   list  - The list to index.
+ * @param {number} index - The index to find in the list.
+ * @returns {any}          The value at the given index.
+ */
+export function index(list, index) {
+    if (!is_list(list)) { return; }
+
+    let len = short(list);
+    switch (len) {
+        case 0: return;
+        case 1: return index === 0 ? head(list) : undefined;
+        case 2: return index === 1 ? tail(list) : undefined;
+    }
+    
     list = get(list, index - 1);
 
     if (!is_list(list)) {
@@ -53,12 +85,35 @@ export function index(list, index) {
 
     let pair = tail(list);
 
-    if (is_pair(pair)) { return; }
+    if (is_pair(pair)) { return head(list); }
     return pair;
 }
 
+/**
+ * Append an item to a list.
+ * @param {List} list  - The list to append to.
+ * @param {*}    value - The value to append to the list.
+ * @returns {number}     The length of the resulting list.
+ */
 export function append(list, value) {
     if (!is_list(list)) { return; }
+
+    let len = short(list);
+    switch (len) {
+        case 0:
+            head(list, value);
+            return 1;
+        case 1:
+            tail(list, value);
+            return 2;
+        case 2:
+            let last = tail(list);
+            tail(list, make_pair(last, value));
+            return 3;
+    }
+
     let end = last(list);
     tail(end, make_pair(tail(end), value));
+
+    return length(list);
 }
